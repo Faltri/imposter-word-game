@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, Clock, Layers, Users, RefreshCw, Sparkles, X, Loader2, Shield } from 'lucide-react';
+import { Settings, Clock, Layers, Users, RefreshCw, Sparkles, X, Loader2, Shield, ArrowLeft } from 'lucide-react';
 import categoriesData from '../data/categories.json';
 import { generateCategory } from '../utils/aiService';
 
-const GameRules = ({ onStart }) => {
+const GameRules = ({ onStart, onBack }) => {
     const [clueRounds, setClueRounds] = useState(1);
     const [timerEnabled, setTimerEnabled] = useState(true);
     const [timerDuration, setTimerDuration] = useState(60);
@@ -63,9 +63,29 @@ const GameRules = ({ onStart }) => {
 
     return (
         <div className="glass-panel" style={{ padding: '2rem', maxWidth: '600px', width: '100%', maxHeight: '80vh', overflowY: 'auto', position: 'relative' }}>
-            <h2 className="text-gradient-gold" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '2rem', fontSize: '2rem' }}>
-                <Settings /> Game Rules
-            </h2>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2rem' }}>
+                {onBack && (
+                    <button
+                        onClick={onBack}
+                        className="btn-ghost"
+                        style={{
+                            marginRight: '0.5rem',
+                            padding: '0',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '44px',
+                            height: '44px'
+                        }}
+                    >
+                        <ArrowLeft size={24} color="var(--primary-gold)" />
+                    </button>
+                )}
+                <h2 className="text-gradient-gold" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '2rem', margin: 0 }}>
+                    <Settings /> Game Rules
+                </h2>
+            </div>
 
             {/* Clue Rounds */}
             <section style={{ marginBottom: '2rem' }}>

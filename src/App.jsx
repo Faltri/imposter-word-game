@@ -66,6 +66,11 @@ function App() {
     setPhase(PHASES.RULES);
   };
 
+  const goBackToLobby = () => {
+    setPhase(PHASES.LOBBY);
+  };
+
+
   const handleRulesConfirm = (newRules) => {
     setRules(newRules);
     initializeGame(newRules);
@@ -91,25 +96,26 @@ function App() {
       secretWord = category.words[wordIndex];
     }
 
-    // Assign Roles
+    // 1. Assign Roles
     const imposterIndex = Math.floor(Math.random() * players.length);
-    let updatedPlayers = players.map((p, i) => ({
+    const assignedPlayers = players.map((p, i) => ({
       ...p,
       role: i === imposterIndex ? 'imposter' : 'civilian'
     }));
 
-    // Fair Play Logic: Ensure Imposter is not Player 0
-    if (currentRules.fairPlayEnabled && updatedPlayers.length > 1) {
-      if (updatedPlayers[0].role === 'imposter') {
-        // Swap Player 0 with Player 1 (or any other)
-        const temp = updatedPlayers[0];
-        updatedPlayers[0] = updatedPlayers[1];
-        updatedPlayers[1] = temp;
+    // 2. Shuffle Order
+    let turnOrder = [...assignedPlayers].sort(() => Math.random() - 0.5);
+
+    // 3. Fair Play Logic
+    if (currentRules.fairPlayEnabled && turnOrder.length > 1) {
+      if (turnOrder[0].role === 'imposter') {
+        const swapIndex = Math.floor(Math.random() * (turnOrder.length - 1)) + 1;
+        [turnOrder[0], turnOrder[swapIndex]] = [turnOrder[swapIndex], turnOrder[0]];
       }
     }
 
-    setPlayers(updatedPlayers);
-    const finalImposter = updatedPlayers.find(p => p.role === 'imposter');
+    setPlayers(turnOrder);
+    const finalImposter = turnOrder.find(p => p.role === 'imposter');
 
     setGameConfig({
       category: category.name,
@@ -134,7 +140,7 @@ function App() {
   };
 
   const handleExit = () => {
-    if (window.confirm("Exit to Lobby? Current game progress will be lost.")) {
+    if (window.confirm("Quit Game? Progress will be lost.")) {
       setPhase(PHASES.LOBBY);
     }
   };
@@ -293,11 +299,16 @@ function App() {
             onClick={handleExit}
             className="btn-ghost"
             style={{
-              position: 'absolute',
+              position: 'fixed',
               top: '1rem',
               right: '1rem',
               zIndex: 50,
-              padding: '0.5rem',
+              width: '40px',
+              height: '40px',
+              padding: '0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               borderRadius: '50%',
               background: 'rgba(0,0,0,0.3)',
               border: '1px solid var(--glass-border)'
@@ -321,7 +332,7 @@ function App() {
 
           {phase === PHASES.RULES && (
             <motion.div key="rules" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-              <GameRules onStart={handleRulesConfirm} />
+              <GameRules onStart={handleRulesConfirm} onBack={goBackToLobby} />
             </motion.div>
           )}
 

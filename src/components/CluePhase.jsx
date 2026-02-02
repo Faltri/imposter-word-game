@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, MessageSquare, Clock } from 'lucide-react';
+import { playSound } from '../utils/audioManager';
 
 const CluePhase = ({ currentPlayer, clues, onSubmitClue, initialTime = 60, showTimer = true, onTimeExpired }) => {
     const [clue, setClue] = useState('');
@@ -11,6 +12,11 @@ const CluePhase = ({ currentPlayer, clues, onSubmitClue, initialTime = 60, showT
     // Timer Logic
     useEffect(() => {
         if (!showTimer) return;
+
+        // Sound Trigger for final 10 seconds
+        if (timeLeft <= 10 && timeLeft > 0) {
+            playSound('tick');
+        }
 
         if (timeLeft > 0) {
             const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
