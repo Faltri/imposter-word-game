@@ -1,0 +1,268 @@
+{
+    "categories": [
+        {
+            "id": "cities",
+            "name": "Global Cities",
+            "words": [
+                "Tokyo",
+                "New York",
+                "Paris",
+                "London",
+                "Dubai",
+                "Singapore",
+                "Sydney",
+                "Rome",
+                "Cairo",
+                "Rio de Janeiro",
+                "Moscow",
+                "Mumbai",
+                "Toronto",
+                "Berlin",
+                "Barcelona",
+                "Istanbul"
+            ]
+        },
+        {
+            "id": "instruments",
+            "name": "Musical Instruments",
+            "words": [
+                "Piano",
+                "Violin",
+                "Guitar",
+                "Drums",
+                "Saxophone",
+                "Flute",
+                "Trumpet",
+                "Cello",
+                "Harp",
+                "Clarinet",
+                "Accordion",
+                "Ukulele",
+                "Synthesizer",
+                "Trombone",
+                "Banjo",
+                "Xylophone"
+            ]
+        },
+        {
+            "id": "animals",
+            "name": "Rare Animals",
+            "words": [
+                "Red Panda",
+                "Axolotl",
+                "Narwhal",
+                "Pangolin",
+                "Snow Leopard",
+                "Komodo Dragon",
+                "Platypus",
+                "Okapi",
+                "Tapir",
+                "Fennec Fox",
+                "Slow Loris",
+                "Quokka",
+                "Cassowary",
+                "Blobfish",
+                "Aye-Aye",
+                "Manatee"
+            ]
+        },
+        {
+            "id": "tech",
+            "name": "Tech Brands",
+            "words": [
+                "Apple",
+                "Google",
+                "Microsoft",
+                "Amazon",
+                "Tesla",
+                "Samsung",
+                "Sony",
+                "Nintendo",
+                "Intel",
+                "Nvidia",
+                "SpaceX",
+                "Adobe",
+                "Spotify",
+                "Netflix",
+                "Oracle",
+                "IBM"
+            ]
+        },
+        {
+            "id": "mythical",
+            "name": "Mythical Creatures",
+            "words": [
+                "Dragon",
+                "Unicorn",
+                "Phoenix",
+                "Mermaid",
+                "Griffin",
+                "Centaur",
+                "Minotaur",
+                "Kraken",
+                "Hydra",
+                "Pegasus",
+                "Werewolf",
+                "Vampire",
+                "Yeti",
+                "Chimera",
+                "Basilisk",
+                "Sphinx"
+            ]
+        },
+        {
+            "id": "paintings",
+            "name": "Famous Paintings",
+            "words": [
+                "Mona Lisa",
+                "Starry Night",
+                "The Scream",
+                "Guernica",
+                "The Great Wave",
+                "Last Supper",
+                "Girl with Pearl Earring",
+                "The Kiss",
+                "Birth of Venus",
+                "Persistence of Memory",
+                "American Gothic",
+                "Night Watch",
+                "Creation of Adam",
+                "Sunflowers",
+                "Water Lilies",
+                "School of Athens"
+            ]
+        },
+        {
+            "id": "fruits",
+            "name": "Exotic Fruits",
+            "words": [
+                "Dragon Fruit",
+                "Durian",
+                "Mangosteen",
+                "Passion Fruit",
+                "Lychee",
+                "Star Fruit",
+                "Rambutan",
+                "Jackfruit",
+                "Kumquat",
+                "Persimmon",
+                "Papaya",
+                "Guava",
+                "Pomegranate",
+                "Fig",
+                "Kiwi",
+                "Coconut"
+            ]
+        },
+        {
+            "id": "history",
+            "name": "Historical Figures",
+            "words": [
+                "Einstein",
+                "Cleopatra",
+                "Da Vinci",
+                "Shakespeare",
+                "Napoleon",
+                "Lincoln",
+                "Gandhi",
+                "Mandela",
+                "Curie",
+                "Mozart",
+                "Darwin",
+                "Tesla",
+                "Caesar",
+                "Picasso",
+                "Beethoven",
+                "Newton"
+            ]
+        },
+        {
+            "id": "planets",
+            "name": "Space & Planets",
+            "words": [
+                "Mars",
+                "Jupiter",
+                "Saturn",
+                "Venus",
+                "Neptune",
+                "Mercury",
+                "Uranus",
+                "Pluto",
+                "Sun",
+                "Moon",
+                "Black Hole",
+                "Comet",
+                "Asteroid",
+                "Galaxy",
+                "Nebula",
+                "Supernova"
+            ]
+        },
+        {
+            "id": "sports",
+            "name": "Sports",
+            "words": [
+                "Soccer",
+                "Basketball",
+                "Tennis",
+                "Cricket",
+                "Golf",
+                "Volleyball",
+                "Rugby",
+                "Baseball",
+                "Hockey",
+                "Boxing",
+                "Swimming",
+                "Badminton",
+                "Formula 1",
+                "Surfing",
+                "Skiing",
+                "Cycling"
+            ]
+        },
+        {
+            "id": "gemstones",
+            "name": "Gemstones",
+            "words": [
+                "Diamond",
+                "Ruby",
+                "Emerald",
+                "Sapphire",
+                "Amethyst",
+                "Opal",
+                "Topaz",
+                "Turquoise",
+                "Jade",
+                "Garnet",
+                "Pearl",
+                "Onyx",
+                "Aquamarine",
+                "Peridot",
+                "Quartz",
+                "Moonstone"
+            ]
+        },
+        {
+            "id": "food",
+            "name": "Global Cuisine",
+            "words": [
+                "Pizza",
+                "Sushi",
+                "Tacos",
+                "Burger",
+                "Pasta",
+                "Curry",
+                "Dim Sum",
+                "Paella",
+                "Falafel",
+                "Ramen",
+                "Croissant",
+                "Kebab",
+                "Pad Thai",
+                "Biryani",
+                "Fondue",
+                "Burrito"
+            ]
+        }
+    ]
+}
