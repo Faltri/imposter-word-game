@@ -2,32 +2,71 @@
   --bg-dark: #0f0a15;
   --bg-gradient-start: #1a0b2e;
   --bg-gradient-end: #2d1b4e;
-  
+
   --primary-gold: #FFD700;
   --primary-gold-dim: #cca700;
-  
+
   --accent-purple: #D946EF;
   --accent-blue: #0EA5E9;
-  
+
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-highlight: rgba(255, 255, 255, 0.15);
-  
+
   --text-primary: #FFFFFF;
   --text-secondary: #9CA3AF;
-  
+
   --font-main: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
-  
+
   --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
   --glow-gold: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+[data-theme='neon'] {
+  --bg-dark: #050510;
+  --bg-gradient-start: #0b0014;
+  --bg-gradient-end: #001020;
+  --primary-gold: #39ff14;
+  /* Neon Green */
+  --primary-gold-dim: #2ccb0f;
+  --accent-purple: #ff00ff;
+  /* Neon Magenta */
+  --accent-blue: #00ffff;
+  /* Cyan */
+  --glass-bg: rgba(0, 0, 0, 0.7);
+  --glass-border: rgba(57, 255, 20, 0.3);
+  --text-primary: #e0f0e0;
+  --text-secondary: #a0b0a0;
+  --shadow-lg: 0 0 20px rgba(57, 255, 20, 0.2);
+  --glow-gold: 0 0 15px rgba(57, 255, 20, 0.5);
+}
+
+[data-theme='minimal'] {
+  --bg-dark: #ffffff;
+  --bg-gradient-start: #ffffff;
+  --bg-gradient-end: #f4f4f5;
+  --primary-gold: #18181b;
+  /* Zinc 900 */
+  --primary-gold-dim: #27272a;
+  --accent-purple: #52525b;
+  /* Zinc 600 */
+  --accent-blue: #3f3f46;
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-highlight: rgba(0, 0, 0, 0.05);
+  --text-primary: #18181b;
+  --text-secondary: #71717a;
+  --shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --glow-gold: 0 0 0 transparent;
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  user-select: none; /* Prevent selection for app-like feel */
+  user-select: none;
+  /* Prevent selection for app-like feel */
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -52,7 +91,10 @@ body {
 }
 
 /* Typography */
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   font-weight: 700;
   letter-spacing: -0.025em;
 }
@@ -112,9 +154,11 @@ button {
 ::-webkit-scrollbar {
   width: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 3px;
@@ -122,8 +166,15 @@ button {
 
 /* Animations */
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); }
-  50% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.3); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.1);
+  }
+
+  50% {
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+  }
 }
 
 .animate-glow {

@@ -32,8 +32,21 @@ function App() {
     timerEnabled: true,
     timerDuration: 60,
     fairPlayEnabled: true,
-    selectedCategories: []
+    selectedCategories: [],
+    // Advanced Settings
+    privacyMasking: false,
+    hardMode: false,
+    aiDifficulty: 'medium', // 'easy', 'medium', 'hard'
+    doubleAgent: false,
+    theme: 'classic', // 'classic', 'neon', 'minimal'
+    language: 'en', // 'en', 'jp'
+    pointMultiplier: false
   });
+
+  // Apply Visual Theme
+  useEffect(() => {
+    document.body.setAttribute('data-theme', rules.theme);
+  }, [rules.theme]);
 
   // Turn State
   const [revealIndex, setRevealIndex] = useState(0);
@@ -96,39 +109,52 @@ function App() {
       secretWord = category.words[wordIndex];
     }
 
-    // 1. Assign Roles
-    const imposterIndex = Math.floor(Math.random() * players.length);
+    // 1. Assign Roles (Handle Double Agent)
+    const totalPlayers = players.length;
+    const imposterCount = (currentRules.doubleAgent && totalPlayers >= 6) ? 2 : 1;
+
+    // Create local set of Imposter Indices
+    const imposterIndices = new Set();
+    while (imposterIndices.size < imposterCount) {
+      imposterIndices.add(Math.floor(Math.random() * totalPlayers));
+    }
+
     const assignedPlayers = players.map((p, i) => ({
       ...p,
-      role: i === imposterIndex ? 'imposter' : 'civilian'
+      role: imposterIndices.has(i) ? 'imposter' : 'civilian'
     }));
 
     // 2. Shuffle Order
     let turnOrder = [...assignedPlayers].sort(() => Math.random() - 0.5);
 
-    // 3. Fair Play Logic
+    // 3. Fair Play Logic (Prevent any Imposter from being Player 0)
     if (currentRules.fairPlayEnabled && turnOrder.length > 1) {
       if (turnOrder[0].role === 'imposter') {
-        const swapIndex = Math.floor(Math.random() * (turnOrder.length - 1)) + 1;
-        [turnOrder[0], turnOrder[swapIndex]] = [turnOrder[swapIndex], turnOrder[0]];
+        // Find first non-imposter index to swap
+        const safeIndices = turnOrder
+          .map((p, idx) => (p.role !== 'imposter' && idx !== 0) ? idx : -1)
+          .filter(idx => idx !== -1);
+
+        if (safeIndices.length > 0) {
+          const swapIndex = safeIndices[Math.floor(Math.random() * safeIndices.length)];
+          [turnOrder[0], turnOrder[swapIndex]] = [turnOrder[swapIndex], turnOrder[0]];
+        }
       }
     }
 
     setPlayers(turnOrder);
-    const finalImposter = turnOrder.find(p => p.role === 'imposter');
+    const imposters = turnOrder.filter(p => p.role === 'imposter');
 
     setGameConfig({
       category: category.name,
       categoryId: category.id,
       words: category.words,
       secretWord,
-      imposterId: finalImposter.id
+      imposterId: imposters[0].id, // Legacy support for single, logic should check array
+      imposterIds: imposters.map(p => p.id),
+      language: currentRules.language || 'en',
+      aiDifficulty: currentRules.aiDifficulty || 'medium'
     });
-
-    // Reset Turn States
-    setRevealIndex(0);
-    setClueIndex(0);
-    setCurrentRound(1);
     setClues([]);
 
     // Start Game
@@ -195,7 +221,9 @@ function App() {
         secretWord,
         categoryName: category,
         existingClues: clues,
-        allWords: words
+        allWords: words,
+        language: gameConfig.language,
+        aiDifficulty: gameConfig.aiDifficulty
       });
       if (strategicClue) finalClue = strategicClue;
     } catch (e) {
@@ -245,7 +273,8 @@ function App() {
   const handleVoteComplete = (votes) => {
     const voteCounts = {};
     players.forEach(p => voteCounts[p.id] = 0);
-    Object.values(votes).forEach(targetId => {
+    Object.values(votes).forEach(voteVal => {
+      const targetId = typeof voteVal === 'object' ? voteVal.target : voteVal;
       voteCounts[targetId] = (voteCounts[targetId] || 0) + 1;
     });
 
@@ -332,7 +361,7 @@ function App() {
 
           {phase === PHASES.RULES && (
             <motion.div key="rules" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-              <GameRules onStart={handleRulesConfirm} onBack={goBackToLobby} />
+              <GameRules onStart={handleRulesConfirm} onBack={goBackToLobby} initialValues={rules} playerCount={players.length} />
             </motion.div>
           )}
 
@@ -356,6 +385,7 @@ function App() {
                 isLast={revealIndex === players.length - 1}
                 isFirstPlayer={revealIndex === 0}
                 onReroll={handleReroll}
+                privacyEnabled={rules.privacyMasking}
               />
             </motion.div>
           )}
@@ -378,6 +408,7 @@ function App() {
               <VotingPhase
                 players={players}
                 onVoteComplete={handleVoteComplete}
+                allowDoubleDown={rules.pointMultiplier}
               />
             </motion.div>
           )}

@@ -2,7 +2,50 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, ArrowRight } from 'lucide-react';
 
-const RoleReveal = ({ playerName, role, category, secretWord, onNext, isLast, isFirstPlayer, onReroll }) => {
+const PrivacyWord = ({ word, enabled }) => {
+    const [isHeld, setIsHeld] = useState(false);
+
+    if (!enabled) return (
+        <p style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--primary-gold)' }}>
+            {word}
+        </p>
+    );
+
+    return (
+        <div
+            onPointerDown={() => setIsHeld(true)}
+            onPointerUp={() => setIsHeld(false)}
+            onPointerLeave={() => setIsHeld(false)}
+            onTouchStart={() => setIsHeld(true)}
+            onTouchEnd={() => setIsHeld(false)}
+            style={{
+                cursor: 'pointer',
+                padding: '0.5rem',
+                borderRadius: '8px',
+                userSelect: 'none',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+            }}
+        >
+            <p style={{
+                fontSize: '1.5rem',
+                fontWeight: 700,
+                color: 'var(--primary-gold)',
+                filter: isHeld ? 'none' : 'blur(10px)',
+                transition: 'filter 0.2s',
+                background: isHeld ? 'transparent' : 'rgba(255,255,255,0.1)',
+                padding: isHeld ? 0 : '0.25rem 1rem',
+                borderRadius: '4px'
+            }}>
+                {word}
+            </p>
+            {!isHeld && <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.7rem', color: 'var(--text-secondary)' }}><EyeOff size={12} /> Hold to reveal</div>}
+        </div>
+    );
+};
+
+const RoleReveal = ({ playerName, role, category, secretWord, onNext, isLast, isFirstPlayer, onReroll, privacyEnabled }) => {
     const [isRevealed, setIsRevealed] = useState(false);
 
     const handleReveal = () => {
@@ -26,7 +69,7 @@ const RoleReveal = ({ playerName, role, category, secretWord, onNext, isLast, is
                 Pass device to <span style={{ color: 'var(--primary-gold)' }}>{playerName}</span>
             </h2>
 
-            <div style={{ position: 'relative', height: '500px', cursor: 'pointer' }} onClick={handleReveal}>
+            <div style={{ position: 'relative', height: '500px', cursor: 'pointer' }} onClick={!isRevealed ? handleReveal : undefined}>
                 <motion.div
                     animate={{ rotateY: isRevealed ? 180 : 0 }}
                     transition={{ duration: 0.6, type: "spring", stiffness: 260, damping: 20 }}
@@ -69,8 +112,9 @@ const RoleReveal = ({ playerName, role, category, secretWord, onNext, isLast, is
                         background: role === 'imposter' ?
                             'linear-gradient(135deg, #4a192c 0%, #2E1A47 100%)' :
                             'linear-gradient(135deg, #1a2e4a 0%, #2E1A47 100%)',
-                        border: `2px solid ${role === 'imposter' ? 'var(--accent-purple)' : 'var(--accent-blue)'}`
-                    }}>
+                        border: `2px solid ${role === 'imposter' ? 'var(--accent-purple)' : 'var(--accent-blue)'}`,
+                        cursor: 'default'
+                    }} onClick={(e) => e.stopPropagation()}>
                         <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
                             {role === 'imposter' ? '🦎' : '🕵️'}
                         </div>
@@ -97,9 +141,7 @@ const RoleReveal = ({ playerName, role, category, secretWord, onNext, isLast, is
                                     UNKNOWN
                                 </p>
                             ) : (
-                                <p style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--primary-gold)' }}>
-                                    {secretWord}
-                                </p>
+                                <PrivacyWord word={secretWord} enabled={privacyEnabled} />
                             )}
                         </div>
 
@@ -108,6 +150,7 @@ const RoleReveal = ({ playerName, role, category, secretWord, onNext, isLast, is
                                 Blend in. Don't get caught.
                             </p>
                         )}
+                        {/* Add Flip Back button/area? No, usually proceed from here. */}
                     </div>
                 </motion.div>
             </div>
