@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserCheck, Zap, HelpCircle } from 'lucide-react';
 
-const VotingPhase = ({ players, onVoteComplete, allowDoubleDown = false }) => {
+const VotingPhase = ({ players, onVoteComplete, allowDoubleDown = false, t }) => {
     const [phase, setPhase] = useState('discussion'); // 'discussion' | 'voting'
     const [currentVoterIndex, setCurrentVoterIndex] = useState(0);
     const [votes, setVotes] = useState({}); // { voterId: { target: targetId, doubled: boolean } }
@@ -67,10 +67,10 @@ const VotingPhase = ({ players, onVoteComplete, allowDoubleDown = false }) => {
                         style={{ padding: '3rem', textAlign: 'center', width: '100%' }}
                     >
                         <HelpCircle size={48} color="var(--primary-gold)" style={{ marginBottom: '1rem' }} />
-                        <h3 style={{ fontSize: '2rem', marginBottom: '2rem' }}>Discuss! Who is the Imposter?</h3>
+                        <h3 style={{ fontSize: '2rem', marginBottom: '2rem' }}>{t?.discuss || "Discuss! Who is the Imposter?"}</h3>
 
                         <button className="btn-primary" onClick={startVoting}>
-                            Vote Now
+                            {t?.voteNow || "Vote Now"}
                         </button>
                     </motion.div>
                 ) : (
@@ -82,15 +82,15 @@ const VotingPhase = ({ players, onVoteComplete, allowDoubleDown = false }) => {
                         style={{ padding: '2rem', width: '100%' }}
                     >
                         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                            <h2 style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Voting Phase</h2>
+                            <h2 style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>{t?.votingPhase || "Voting Phase"}</h2>
                             {currentVoter.isAI ? (
                                 <h3 className="animate-pulse" style={{ fontSize: '1.5rem', color: 'var(--accent-purple)' }}>
-                                    AI {currentVoter.name} is choosing...
+                                    {t?.aiIsChoosing ? t.aiIsChoosing.replace('{name}', currentVoter.name) : `AI ${currentVoter.name} is choosing...`}
                                 </h3>
                             ) : (
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
                                     <h3 style={{ fontSize: '1.5rem' }}>
-                                        <span style={{ color: 'var(--primary-gold)' }}>{currentVoter.name}</span>, who is the Imposter?
+                                        <span style={{ color: 'var(--primary-gold)' }}>{currentVoter.name}</span>, {t?.whoIsImposter || "who is the Imposter?"}
                                     </h3>
 
                                     {allowDoubleDown && (
@@ -116,7 +116,7 @@ const VotingPhase = ({ players, onVoteComplete, allowDoubleDown = false }) => {
                                                 style={{ display: 'none' }}
                                             />
                                             <span style={{ fontWeight: 500, color: isDoubleDown ? 'var(--primary-gold)' : 'var(--text-secondary)' }}>
-                                                Double Down <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>(x2 Pts / -1 if wrong)</span>
+                                                {t?.doubleDown || "Double Down"} <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>{t?.doubleDownHint || "(x2 Pts / -1 if wrong)"}</span>
                                             </span>
                                         </label>
                                     )}

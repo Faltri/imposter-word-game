@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Send, MessageSquare, Clock } from 'lucide-react';
 import { playSound } from '../utils/audioManager';
 
-const CluePhase = ({ currentPlayer, clues, onSubmitClue, initialTime = 60, showTimer = true, onTimeExpired }) => {
+const CluePhase = ({ currentPlayer, clues, onSubmitClue, initialTime = 60, showTimer = true, onTimeExpired, t }) => {
     const [clue, setClue] = useState('');
     const [error, setError] = useState('');
     const [timeLeft, setTimeLeft] = useState(initialTime);
@@ -40,7 +40,7 @@ const CluePhase = ({ currentPlayer, clues, onSubmitClue, initialTime = 60, showT
 
         // Simple validation: one word-ish
         if (clue.trim().split(' ').length > 3) {
-            setError('Keep it short (1-3 words max)');
+            setError(t?.clueError || 'Keep it short (1-3 words max)');
             return;
         }
 
@@ -57,7 +57,7 @@ const CluePhase = ({ currentPlayer, clues, onSubmitClue, initialTime = 60, showT
                 <div style={{ padding: '1rem', borderBottom: '1px solid var(--glass-border)', background: 'rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <h2 style={{ fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <MessageSquare size={20} color="var(--primary-gold)" />
-                        Clue History
+                        {t?.clueHistory || "Clue History"}
                     </h2>
                     {showTimer && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: timeLeft <= 10 ? '#ef4444' : 'white', fontWeight: 'bold' }}>
@@ -70,7 +70,7 @@ const CluePhase = ({ currentPlayer, clues, onSubmitClue, initialTime = 60, showT
                 <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     {clues.length === 0 ? (
                         <div style={{ textAlign: 'center', color: 'var(--text-secondary)', marginTop: '2rem' }}>
-                            No clues yet. Start the round!
+                            {t?.noClues || "No clues yet. Start the round!"}
                         </div>
                     ) : (
                         clues.map((c, i) => (
@@ -110,7 +110,7 @@ const CluePhase = ({ currentPlayer, clues, onSubmitClue, initialTime = 60, showT
                             animate={{ opacity: [0.5, 1, 0.5] }}
                             transition={{ repeat: Infinity, duration: 1.5 }}
                         >
-                            {currentPlayer.name} is thinking...
+                            {t?.aiIsThinking ? t.aiIsThinking.replace('{name}', currentPlayer.name) : `${currentPlayer.name} is thinking...`}
                         </motion.div>
                     </div>
                 ) : (
@@ -124,7 +124,7 @@ const CluePhase = ({ currentPlayer, clues, onSubmitClue, initialTime = 60, showT
                                     type="text"
                                     value={clue}
                                     onChange={(e) => setClue(e.target.value)}
-                                    placeholder="Type your clue..."
+                                    placeholder={t?.clueInputPlaceholder || "Type your clue..."}
                                     style={{
                                         width: '100%',
                                         background: 'rgba(0,0,0,0.3)',

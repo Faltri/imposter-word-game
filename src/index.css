@@ -43,22 +43,21 @@
 }
 
 [data-theme='minimal'] {
-  --bg-dark: #ffffff;
-  --bg-gradient-start: #ffffff;
-  --bg-gradient-end: #f4f4f5;
-  --primary-gold: #18181b;
-  /* Zinc 900 */
-  --primary-gold-dim: #27272a;
-  --accent-purple: #52525b;
-  /* Zinc 600 */
-  --accent-blue: #3f3f46;
-  --glass-bg: rgba(255, 255, 255, 0.8);
-  --glass-border: rgba(0, 0, 0, 0.1);
-  --glass-highlight: rgba(0, 0, 0, 0.05);
-  --text-primary: #18181b;
-  --text-secondary: #71717a;
-  --shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --glow-gold: 0 0 0 transparent;
+  /* Pure Monochrome - Black & White Only */
+  --bg-dark: #000000;
+  --bg-gradient-start: #000000;
+  --bg-gradient-end: #0a0a0a;
+  --primary-gold: #ffffff;
+  --primary-gold-dim: #e5e5e5;
+  --accent-purple: #cccccc;
+  --accent-blue: #999999;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-highlight: rgba(255, 255, 255, 0.08);
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0a0;
+  --shadow-lg: 0 0 20px rgba(255, 255, 255, 0.05);
+  --glow-gold: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 * {
@@ -179,4 +178,87 @@ button {
 
 .animate-glow {
   animation: pulse-glow 2s infinite;
+}
+
+/* Custom Range Slider */
+.custom-slider {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+  opacity: 0.8;
+  transition: opacity .2s;
+}
+
+.custom-slider:hover {
+  opacity: 1;
+}
+
+.custom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--primary-gold);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s ease;
+}
+
+.custom-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--primary-gold);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s ease;
+}
+
+.custom-slider::-webkit-slider-thumb:hover,
+.custom-slider::-webkit-slider-thumb:active {
+  transform: scale(1.2);
+  box-shadow: 0 0 15px var(--primary-gold);
+}
+
+.custom-slider::-moz-range-thumb:hover,
+.custom-slider::-moz-range-thumb:active {
+  transform: scale(1.2);
+  box-shadow: 0 0 15px var(--primary-gold);
+}
+
+/* Spin Animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Pulse Animation */
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
 }

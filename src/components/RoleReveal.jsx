@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { EyeOff, ArrowRight } from 'lucide-react';
 
-const PrivacyWord = ({ word, enabled }) => {
+const PrivacyWord = ({ word, enabled, t }) => {
     const [isHeld, setIsHeld] = useState(false);
 
     if (!enabled) return (
@@ -40,12 +40,12 @@ const PrivacyWord = ({ word, enabled }) => {
             }}>
                 {word}
             </p>
-            {!isHeld && <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.7rem', color: 'var(--text-secondary)' }}><EyeOff size={12} /> Hold to reveal</div>}
+            {!isHeld && <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.7rem', color: 'var(--text-secondary)' }}><EyeOff size={12} /> {t?.holdToReveal || "Hold to reveal"}</div>}
         </div>
     );
 };
 
-const RoleReveal = ({ playerName, role, category, secretWord, onNext, isLast, isFirstPlayer, onReroll, privacyEnabled }) => {
+const RoleReveal = ({ playerName, role, category, secretWord, onNext, isLast, isFirstPlayer, onReroll, privacyEnabled, t }) => {
     const [isRevealed, setIsRevealed] = useState(false);
 
     const handleReveal = () => {
@@ -66,7 +66,7 @@ const RoleReveal = ({ playerName, role, category, secretWord, onNext, isLast, is
     return (
         <div style={{ width: '100%', maxWidth: '400px', textAlign: 'center', perspective: '1000px' }}>
             <h2 style={{ marginBottom: '1rem', color: 'var(--text-secondary)' }}>
-                Pass device to <span style={{ color: 'var(--primary-gold)' }}>{playerName}</span>
+                {t?.passDevice || "Pass device to"} <span style={{ color: 'var(--primary-gold)' }}>{playerName}</span>
             </h2>
 
             <div style={{ position: 'relative', height: '500px', cursor: 'pointer' }} onClick={!isRevealed ? handleReveal : undefined}>
@@ -95,7 +95,7 @@ const RoleReveal = ({ playerName, role, category, secretWord, onNext, isLast, is
                     }}>
                         <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔒</div>
                         <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>CONFIDENTIAL</h3>
-                        <p style={{ color: 'var(--text-secondary)' }}>Tap to reveal your identity</p>
+                        <p style={{ color: 'var(--text-secondary)' }}>{t?.tapToReveal || "Tap to reveal your identity"}</p>
                     </div>
 
                     {/* Back of Card (Revealed) */}
@@ -126,31 +126,30 @@ const RoleReveal = ({ playerName, role, category, secretWord, onNext, isLast, is
                             color: role === 'imposter' ? 'var(--accent-purple)' : 'var(--accent-blue)',
                             textTransform: 'uppercase'
                         }}>
-                            {role === 'imposter' ? 'The Imposter' : 'Civilian'}
+                            {role === 'imposter' ? (t?.imposterRole || 'The Imposter') : (t?.civilianRole || 'Civilian')}
                         </h3>
 
                         <div style={{ width: '80%', padding: '1rem', background: 'rgba(0,0,0,0.3)', borderRadius: '12px' }}>
-                            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>CATEGORY</p>
+                            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>{t?.category || "CATEGORY"}</p>
                             <p style={{ fontSize: '1.25rem', fontWeight: 600, color: 'white', marginBottom: '1rem' }}>{category}</p>
 
                             <div style={{ height: '1px', background: 'rgba(255,255,255,0.1)', marginBottom: '1rem' }} />
 
-                            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>SECRET WORD</p>
+                            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>{t?.secretWord || "SECRET WORD"}</p>
                             {role === 'imposter' ? (
                                 <p style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--accent-purple)', letterSpacing: '1px' }}>
                                     UNKNOWN
                                 </p>
                             ) : (
-                                <PrivacyWord word={secretWord} enabled={privacyEnabled} />
+                                <PrivacyWord word={secretWord} enabled={privacyEnabled} t={t} />
                             )}
                         </div>
 
                         {role === 'imposter' && (
                             <p style={{ marginTop: '2rem', fontSize: '0.9rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
-                                Blend in. Don't get caught.
+                                {t?.imposterHint || "Blend in. Don't get caught."}
                             </p>
                         )}
-                        {/* Add Flip Back button/area? No, usually proceed from here. */}
                     </div>
                 </motion.div>
             </div>
@@ -167,7 +166,7 @@ const RoleReveal = ({ playerName, role, category, secretWord, onNext, isLast, is
                             onClick={(e) => { e.stopPropagation(); handleNext(); }}
                             style={{ width: '100%' }}
                         >
-                            {isLast ? "Start Game" : "Next Player"} <ArrowRight size={20} style={{ marginLeft: '0.5rem', display: 'inline-block', verticalAlign: 'middle' }} />
+                            {isLast ? (t?.start || "Start Game") : (t?.nextPlayer || "Next Player")} <ArrowRight size={20} style={{ marginLeft: '0.5rem', display: 'inline-block', verticalAlign: 'middle' }} />
                         </button>
 
                         {isFirstPlayer && (
@@ -181,7 +180,7 @@ const RoleReveal = ({ playerName, role, category, secretWord, onNext, isLast, is
                                     fontSize: '0.9rem'
                                 }}
                             >
-                                Emergency Reroll
+                                {t?.reroll || "Emergency Reroll"}
                             </button>
                         )}
                     </motion.div>

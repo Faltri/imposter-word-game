@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Cpu, X, Play, Plus } from 'lucide-react';
 
-const Lobby = ({ players, onAddPlayer, onRemovePlayer, onStartGame }) => {
+const Lobby = ({ players, onAddPlayer, onRemovePlayer, onStartGame, t }) => {
     const [name, setName] = useState('');
     const [isAI, setIsAI] = useState(false);
 
@@ -111,19 +111,23 @@ const Lobby = ({ players, onAddPlayer, onRemovePlayer, onStartGame }) => {
                                 <span style={{ fontWeight: 500 }}>{p.name}</span>
                                 {p.isAI && <span style={{ fontSize: '0.75rem', color: 'var(--accent-purple)', background: 'rgba(217, 70, 239, 0.1)', padding: '2px 6px', borderRadius: '4px' }}>AI</span>}
                             </div>
-                            <button
-                                onClick={() => onRemovePlayer(p.id)}
-                                style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', padding: '4px', cursor: 'pointer' }}
-                            >
-                                <X size={18} />
-                            </button>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                <span style={{ color: 'var(--primary-gold)', fontWeight: 700, fontSize: '0.9rem' }}>{t?.totalScore || "Score"}: {p.score}</span>
+                                <button
+                                    onClick={() => onRemovePlayer(p.id)}
+                                    style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', padding: '4px', cursor: 'pointer' }}
+                                >
+                                    <X size={18} />
+                                </button>
+                            </div>
                         </motion.div>
                     ))}
                 </AnimatePresence>
 
                 {players.length === 0 && (
                     <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
-                        No players added yet via lobby.
+                        No players added yet.
                     </div>
                 )}
             </div>
@@ -143,7 +147,7 @@ const Lobby = ({ players, onAddPlayer, onRemovePlayer, onStartGame }) => {
                 }}
             >
                 <Play size={20} fill="currentColor" />
-                START GAME
+                {t?.start || "START GAME"}
             </button>
         </div>
     );

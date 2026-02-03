@@ -1,12 +1,7 @@
 import categoriesData from '../data/categories.json';
 
-// Mock database for specific quick starts (optional optimization)
-// We can keep these for instant replies if we want, or remove to force API for everything.
-// Keeping them is good for predictable demos.
-const MOCK_DB = {
-    // "world landmarks": ... (Optional: Keep or remove. User said "Enable live external API calls".)
-    // Let's rely on API primarily, but maybe keep them as immediate offline fallbacks if API key is missing?
-};
+// API Key - hardcoded for reliability
+const GEMINI_API_KEY = 'AIzaSyCpEOKlteGylVcT8XeROJMMfWNmv4fZqEs';
 
 // Validation Schema
 const validateSchema = (data) => {
@@ -16,49 +11,71 @@ const validateSchema = (data) => {
     return true;
 };
 
+// Helper to call Gemini API
+const callGeminiAPI = async (prompt) => {
+    console.log('[Gemini] Making API request...');
+    console.log('[Gemini] API Key present:', !!GEMINI_API_KEY);
+
+    // Using direct URL - no proxy
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+    console.log('[Gemini] URL:', url);
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            contents: [{
+                parts: [{
+                    text: prompt
+                }]
+            }]
+        })
+    });
+
+    console.log('[Gemini] Response status:', response.status);
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[Gemini] Error response:', errorText);
+        throw new Error(`API_ERROR: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log('[Gemini] Response data:', data);
+    return data.candidates?.[0]?.content?.parts?.[0]?.text;
+};
+
 export const generateCategory = async (prompt, language = 'en') => {
-    const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+    console.log('=== GENERATE CATEGORY CALLED ===');
+    console.log('[AI/Gemini] Theme:', prompt);
+    console.log('[AI/Gemini] Language:', language);
+
+    const langInst = language === 'jp' ? "in Japanese (Katakana or Kanji as appropriate)" : "in English";
+    const systemPrompt = `Generate a JSON object with two keys: 'categoryName' (a cleaned version of the user input) and 'words' (an array of exactly 16 unique, distinct, and universally recognizable nouns related to the theme). Ensure words vary in difficulty. Words must be ${langInst}. Output valid JSON only, no markdown code blocks. Theme: ${prompt}`;
 
     try {
-        console.log(`[AI] Generating for theme: "${prompt}" [${language}]...`);
+        const textContent = await callGeminiAPI(systemPrompt);
 
-        if (!API_KEY || API_KEY === 'YOUR_API_KEY_HERE') {
-            throw new Error("MISSING_API_KEY");
-        }
+        console.log('[AI/Gemini] Raw response:', textContent);
 
-        const langInst = language === 'jp' ? "in Japanese (Katakana or Kanji as appropriate)" : "in English";
-        const systemPrompt = `Generate a JSON object with two keys: 'categoryName' (a cleaned version of the user input) and 'words' (an array of exactly 16 unique, distinct, and universally recognizable nouns related to the theme). Ensure words vary in difficulty. Words must be ${langInst}. Output valid JSON only, no markdown. Theme: ${prompt}`;
-
-        const response = await fetch(`/api/gemini/v1beta/models/gemini-flash-latest:generateContent?key=${API_KEY}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: systemPrompt
-                    }]
-                }]
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`API_ERROR: ${response.status} ${response.statusText}`);
-        }
-
-        const rawData = await response.json();
-        const textContent = rawData.candidates?.[0]?.content?.parts?.[0]?.text;
         if (!textContent) throw new Error("NO_CONTENT_IN_RESPONSE");
 
         const cleanedText = textContent.replace(/```json/g, '').replace(/```/g, '').trim();
+        console.log('[AI/Gemini] Cleaned text:', cleanedText);
+
         const parsedResult = JSON.parse(cleanedText);
+        console.log('[AI/Gemini] Parsed result:', parsedResult);
 
         const gameReadyData = {
             id: `ai_${Date.now()}`,
             name: parsedResult.categoryName || parsedResult.name,
             words: parsedResult.words
         };
+
+        console.log("✅ AI Words Generated:", gameReadyData.words);
+        console.log("✅ AI Category Name:", gameReadyData.name);
 
         if (!validateSchema(gameReadyData)) {
             throw new Error("SCHEMA_VALIDATION_FAILED: Invalid structure.");
@@ -67,21 +84,13 @@ export const generateCategory = async (prompt, language = 'en') => {
         return gameReadyData;
 
     } catch (error) {
-        // ... (Error handling remains similar, slightly condensed if needed)
-        console.error("AI Service Error:", error.message);
-        const animalsCategory = categoriesData.categories.find(c => c.id === 'animals') || categoriesData.categories[0];
-        return {
-            ...animalsCategory,
-            id: `ai_fallback_${Date.now()}`,
-            name: `✨ ${animalsCategory.name} (AI Fallback)`,
-            isFallback: true
-        };
+        console.error("❌ AI Service Error:", error);
+        throw error;
     }
 };
 
 export const generateStrategicClue = async ({ role, secretWord, categoryName, existingClues, allWords, language = 'en', aiDifficulty = 'medium' }) => {
-    const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-    if (!API_KEY || API_KEY === 'YOUR_API_KEY_HERE') return null;
+    if (!GEMINI_API_KEY) return null;
 
     const langInstr = language === 'jp' ? "Respond in Japanese." : "Respond in English.";
     const diffInstr = aiDifficulty === 'easy' ? "Give a simple, often too-obvious clue."
@@ -91,19 +100,13 @@ export const generateStrategicClue = async ({ role, secretWord, categoryName, ex
     const prompt = role === 'civilian'
         ? `Game: Word Imposter. Category: "${categoryName}". Secret Word: "${secretWord}". Previous Clues: [${existingClues.map(c => c.text || c).join(', ')}]. 
            Task: precise 1-word clue for "${secretWord}" that is NOT the word itself and is distinct from history. ${diffInstr} ${langInstr}
-           Output JSON: { "clue": "..." }`
+           Output JSON only: { "clue": "..." }`
         : `Game: Word Imposter. Category: "${categoryName}". You are the Imposter (you don't know the word). Previous Clues: [${existingClues.map(c => c.text || c).join(', ')}]. 
            Task: Analyze clues to guess context. Give a safe, vague 1-word clue that blends in. If no clues, give a generic word for the category. ${diffInstr} ${langInstr}
-           Output JSON: { "clue": "..." }`;
+           Output JSON only: { "clue": "..." }`;
 
     try {
-        const response = await fetch(`/api/gemini/v1beta/models/gemini-flash-latest:generateContent?key=${API_KEY}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-        });
-        const data = await response.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        const text = await callGeminiAPI(prompt);
         const json = JSON.parse(text.replace(/```json|```/g, '').trim());
         return json.clue;
     } catch (e) {
@@ -113,22 +116,15 @@ export const generateStrategicClue = async ({ role, secretWord, categoryName, ex
 };
 
 export const generateStrategicGuess = async ({ categoryName, existingClues, allWords, language = 'en' }) => {
-    const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-    if (!API_KEY || API_KEY === 'YOUR_API_KEY_HERE') return null;
+    if (!GEMINI_API_KEY) return null;
 
     const langInstr = language === 'jp' ? "Respond in Japanese." : "Respond in English.";
     const prompt = `Game: Word Imposter. Category: "${categoryName}". List: [${allWords.join(', ')}]. Clues: [${existingClues.map(c => c.text || c).join(', ')}]. 
                     Task: Identify the secret word from the List based on clues. ${langInstr}
-                    Output JSON: { "guess": "WORD_FROM_LIST" }`;
+                    Output JSON only: { "guess": "WORD_FROM_LIST" }`;
 
     try {
-        const response = await fetch(`/api/gemini/v1beta/models/gemini-flash-latest:generateContent?key=${API_KEY}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-        });
-        const data = await response.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        const text = await callGeminiAPI(prompt);
         const json = JSON.parse(text.replace(/```json|```/g, '').trim());
         return json.guess;
     } catch (e) {
